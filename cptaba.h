@@ -23,8 +23,6 @@
  * SUCH DAMAGE.
  */
 
-/* $Id: cptaba.h,v 1.14 2009/05/24 15:05:22 ghos Exp $ */
-
 /*
  * There are codepages list.
  * Note: letters were placed in order 'a..ya A..YA'

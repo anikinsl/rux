@@ -23,8 +23,6 @@
  * SUCH DAMAGE.
  */
 
-/* $Id: cpinfo.h,v 1.7 2009/05/08 19:19:36 ghos Exp $ */
-
 #ifndef CPINFO_H
 #define CPINFO_H
 #include <sys/types.h>

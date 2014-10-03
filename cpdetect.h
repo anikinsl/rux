@@ -23,8 +23,6 @@
  * SUCH DAMAGE.
  */
 
-/* $Id: cpdetect.h,v 1.9 2006/01/22 15:55:40 ghos Exp $ */
-
 #include <sys/types.h>
 #include "cpinfo.h"
 

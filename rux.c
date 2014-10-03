@@ -23,8 +23,6 @@
  * SUCH DAMAGE.
  */
 
-/* $Id: rux.c,v 1.49 2009/05/26 21:00:50 ghos Exp $ */
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
