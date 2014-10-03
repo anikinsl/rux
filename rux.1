@@ -1,0 +1,154 @@
+.\" Copyright ¿ 2005, 2006 Vyacheslav Anikin. All rights reserved.
+.\" 
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\" 
+.\" THIS SOFTWARE IS PROVIDED BY AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL AUTHOR OR CONTRIBUTORS BE LIABLE
+.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.\"
+.\" The rux manpage
+.\" $Id: rux.1,v 1.15 2006/03/03 20:22:46 ghos Exp $
+.\"
+.Dd November 18, 2005
+.Os FreeBSD 5.3
+.Dt RUX 1
+.Sh NAME
+.Nm rux
+.Nd used for reading of files in Cyrillic encoding.
+.Sh SYNOPSIS
+.Nm rux
+.Op Fl egtT
+.Op Fl i Ar incp
+.Op Fl o Ar outcp
+.Bk
+.Op Ar
+.Ek
+.Sh DESCRIPTION
+The
+.Nm
+is a simple and at the same time powerful utility for texts
+recoding from one encoding to another. At present time several the
+most popular Cyrillic code pages such as koi8-r, cp866, cp1251,
+iso8859-5 and mac-cyrillic are supported. Also
+.Nm
+gives the opportunity to recode box-drawing characters, which
+exists in some Cyrillic code pages, to replace them
+by their non-graphic analogues ('-', '+', etc.).
+.Pp
+Besides, the
+.Nm
+can detect a code page of the input files automatically.
+.Pp
+Usually
+.Nm
+is used without any options because some values are accepted
+by default. There are
+.Fl o
+.Ar koi8-r,
+.Fl e ,
+.Fl t ,
+.Fl s
+.Ar 10240 .
+.Pp
+However you can use the following options:
+.Bl -tag -width flag
+.It Fl e
+Replace box-drawing characters by their non-graphic analogues.
+Accepted by default.
+.It Fl g
+Inverse of
+.Fl e
+option. (Overrides any previous
+.Fl e
+option).
+.It Fl t
+Attempt to detect a code page of the input files. Accepted by default.
+.It Fl T
+Same as
+.Fl t ,
+but don't actually recode the input files, just
+show their code pages.
+.It Fl i
+Specify an input code page. Use
+.Fl h
+option to determine the supported code pages list.
+.It Fl o
+Specify an output code page. Default is
+.Ql koi8-r .
+.It Fl q
+Suspress all warnings.
+.It Fl h
+Show the short help message with the accepted flags and
+the supported code pages.
+.El
+.Pp
+The expectancy value of the presence of every Cyrillic characters
+in the some text were taken from the dump of Russian translation
+of the
+.Ql FreeBSD Handbook .
+.Sh EXAMPLES
+The following is an example of usage of the
+.Nm
+command:
+.Pp
+.Dl $ ls -la *-text
+.Dl -rw-r--r--  1 ghos  users  24 Nov 18 18:03 dos-text
+.Dl -rw-r--r--  1 ghos  users  24 Nov 18 18:03 windows-text
+.Pp
+.Dl $ rux -T *-text
+.Dl dos-text: cp866
+.Dl windows-text: cp1251
+.Pp
+For example, this alias can be set for cp1251 encoding:
+.Pp
+.Dl $ alias cp1251='rux -i cp1251'
+.Dl $ cat windows-text | cp1251
+.Dl ..
+.Pp
+But this shell-script can be created:
+.Pp
+.Dl #!/bin/sh
+.Dl ""
+.Dl rux $@ | less
+.Pp
+and called as ruless :-):
+.Pp
+.Dl $ ruless cyr-text-file
+.Dl ..
+.Dl $ cat cyr-text-file | ruless
+.Dl ..
+.Pp
+.Sh SEE ALSO
+.Rs
+.%A Roman Czyborra
+.%T The Cyrillic Charset Soup
+.%D November 30, 1998
+.%O http://czyborra.com/charsets/cyrillic.html
+.Re
+.Sh HISTORY
+.Pp
+The
+.Nm
+appeared in 2003.
+.Pp
+This manual was written in 2005.
+.Sh AUTHORS
+.An "Vyacheslav Anikin" Aq anikinsl@gmail.com
+.Nd author, russian manual
+.Sh BUGS
+Please let me know if you found them. I don't like bugs.

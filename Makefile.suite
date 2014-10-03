@@ -1,0 +1,106 @@
+# $Id: Makefile,v 1.39 2009/03/02 15:59:48 ghos Exp $
+
+MAINTAINER=	anikinsl@gmail.com
+
+PROGNAME=	rux
+PROGVERSION=	0.80
+
+SRCS=		rux.c cpdetect.c
+OBJS=		rux.o cpdetect.o
+PKGNAME=	${PROGNAME}-${PROGVERSION}
+MAN=		${PROGNAME}.1
+MANR=		ru.${PROGNAME}.1
+PREFIX?=	/usr/local
+INSTALL=	install -C -S -o root -g wheel
+
+CURDATE!=	LC_ALL=C date
+OUTCP?=		2
+CFLAGS+=	-Wall -pedantic -DDEFAULT_OUTPUT_CP=${OUTCP}
+LDFLAGS+=	-lm
+
+REDIST_FILES=	rux.c cpdetect.c cpdetect.h Makefile cptaba.h cpinfo.h version.h \
+		ru.rux.1 rux.1 dmalloc.c dmalloc.h README
+
+.if defined(DEBUG)
+CFLAGS+=-DDEBUG
+.if defined(MEMDEBUG)
+CFLAGS+=-DMEMDEBUG
+SRCS+=dmalloc.c
+OBJS+=dmalloc.o
+.endif
+.endif
+
+all:		ss version.h ${PROGNAME} doc
+ss:
+.ifdef (DEBUG)
+	rm version.h
+.endif
+	@echo '===> Building for '${PROGNAME}-${PROGVERSION}
+
+${PROGNAME}:	${OBJS}
+	${CC} ${CFLAGS} ${LDFLAGS} ${OBJS} -o ${PROGNAME}
+
+rux.o:		rux.c version.h
+	${CC} ${CFLAGS} -c $<
+cpdetect.o:	cpdetect.c
+	${CC} ${CFLAGS} -c $<
+
+doc:		${MAN}.gz ${MANR}.gz
+${MAN}.gz:	${MAN}
+	@echo '===> Rolling en manpage'
+	@gzip -cn ${MAN}  > ${MAN}.gz
+${MANR}.gz:	${MANR}
+	@echo '===> Rolling ru manpage'
+	@gzip -cn ${MANR} > ${MANR}.gz
+
+install:
+	@echo '==> Installing of '${PROGNAME}-${PROGVERSION}
+	@${INSTALL} -s -m 755 ${PROGNAME} ${PREFIX}/bin
+	@${INSTALL} -m 444 ${MAN}.gz  ${PREFIX}/man/man1/${MAN}.gz
+	@${INSTALL} -m 444 ${MANR}.gz ${PREFIX}/man/ru.KOI8-R/man1/${MAN}.gz
+
+deinstall:
+	@echo '==> Deinstalling of '${PROGNAME}-${PROGVERSION}
+	@rm -f ${PREFIX}/bin/${PROGNAME}
+	@rm -f ${PREFIX}/man/man1/${MAN}.gz
+	@rm -f ${PREFIX}/man/ru.KOI8-R/man1/${MAN}.gz
+
+clean:
+	@echo '==> Cleaning up for '${PROGNAME}-${PROGVERSION}
+	@rm -f ${OBJS}
+	@rm -f ${MAN}.gz
+	@rm -f ${MANR}.gz
+	@rm -f ${PROGNAME}
+	@rm -f ${PKGNAME}.tar.gz
+
+redist: clean
+	@echo '==> Making a new distribution for '${PROGNAME}-${PROGVERSION}
+	@mkdir -p ${PKGNAME}
+	@cp ${REDIST_FILES} ${PKGNAME}
+	@tar cvf ${PKGNAME}.tar ${PKGNAME}
+	@gzip ${PKGNAME}.tar
+makeport:	redist
+	@echo '==> Preparing a port for '${PROGNAME}-${PROGVERSION}
+	@cat port/Makefile.in | sed -e 's,@PKGNAME@,'${PKGNAME}.tar.gz',g' > port/Makefile
+	@cp ${PKGNAME}.tar.gz port/
+	@echo "Don't forget to \`cd port; make'"
+
+version.h: ${MAKEFILE}
+	@echo '==> Stamping a version for '${PROGNAME}-${PROGVERSION}
+	@echo "#define VERSION \"${PROGVERSION}\"" > ${.TARGET}
+	@echo "#define DATETIME \"${CURDATE}\"" >> ${.TARGET}
+
+REPOTAGC=`echo ${PROGVERSION} | sed -e "s,^\(.*\)\.\(.*\)[t]*$$,C_\1_\2,"`
+REPOTAGR=`echo ${PROGVERSION} | sed -e "s,^\(.*\)\.\(.*\)[t]*$$,R_\1_\2,"`
+tag:
+	@echo REPOTAGC=${REPOTAGC}
+	@echo 'Use make ctag for tagging with C_X_X tag'
+	@echo ''
+	@echo REPOTAGR=${REPOTAGR}
+	@echo 'Use make rtag for tagging with R_X_X tag'
+ctag:
+	@echo '==> Tagging of '${PROGNAME}-${PROGVERSION}' with '${REPOTAGC}
+	@cvs tag -F ${REPOTAGC} ${REDIST_FILES}
+rtag:
+	@echo '==> Tagging of '${PROGNAME}-${PROGVERSION}' with '${REPOTAGR}
+	@cvs tag -F ${REPOTAGR} ${REDIST_FILES}
