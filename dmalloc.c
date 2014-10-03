@@ -12,6 +12,11 @@ static int nmbs = 0;
 
 void *dmalloc(size_t size)
 {
+	if (nmbs > sizeof(memblock)) {
+		fprintf(stdout, "dmalloc: ++ Cannot allocate more space: not enough free blocks of memory (nmbs=%d)\n", nmbs);
+		exit(0);
+	}
+
 	void *alloced = malloc(size);
 
 	memblock[nmbs].mb_base = alloced;

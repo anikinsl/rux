@@ -75,7 +75,7 @@ int pwarnf(const char *fmt,...);
 
 /* Default flags' values */
 static int f_graph = 0;			/* Recode pseudo-graphics too */
-static int f_quiet = 0;			/* Quiet mode, shut stderr */
+static int f_quiet = 1;			/* Quiet mode, shut stderr */
 static int f_doconv = 1;		/* Do convert by default */
 static int f_detect = 1;		/* Auto detect by default */
 static int f_lax = 0;			/* Don't touch lax-files */
@@ -130,7 +130,7 @@ int main(int argc, char **argv)
 
 	o_cp = def_ocp;			/* Initialize o_cp using default cp */
 
-	while ((flag = getopt(argc, argv, "i:o:thegTs:qlc")) != -1) {
+	while ((flag = getopt(argc, argv, "i:o:thegTs:qvlc")) != -1) {
 		switch (flag) {
 		case 'e':		/* Universal recoding pseudo-graphics */
 			f_graph = 0;
@@ -154,10 +154,13 @@ int main(int argc, char **argv)
 			f_detect = 1;
 			break;
 		case 's':		/* Block size in bytes */
-			pwarnf("Using -s option is deprecated!\n");
+			/* Using -s option is deprecated! */
 			break;
 		case 'q':		/* Suspress all warnings */
 			f_quiet = 1;
+			break;
+		case 'v':		/* Verbose meaning */
+			f_quiet = 0;
 			break;
 		case 'l':
 			f_lax = 1;
@@ -336,20 +339,22 @@ void print_usage(void)
 	printf (" rux %s -- " DATETIME "\n", version);
 
 	/* Characters specific help message */
-	printf (" Usage: rux [-egtT] [-i incp] [-o outcp] [file ...]\n\n"
+	printf (" Usage: rux [-egT] [-i incp] [-o outcp] [file ...]\n\n"
 		"    -e   -- Replace box-drawing characters by non-graphic. Default.\n"
 		"    -g   -- Inverse of -e option. (Overrides any previous -e option).\n"
-		"    -c   -- Work with alphabet characters only. Skips non-russian characters\n");
+		"    -c   -- Work with alphabet characters only. Skips non-russian characters\n"
+	);
 
 	/* Codepage specific help message*/
-	printf ("    -t   -- Attempt to detect a code page of the input files. Default.\n"
+	printf (/*"    -t   -- Attempt to detect a code page of the input files. Default.\n"*/
 		"    -T   -- Just show the code pages of the input files.\n\n"
 		"    -i   -- Specify an input code page. Overrides by -[tT]\n"
 		"    -o   -- Specify an output code page. Default is `%s'.\n\n",
 		codepage[DEFAULT_OUTPUT_CP].cp_name);
 
 	/* How to make it quiet and How to get help */
-	printf ("    -q   -- Quiet mode (suspress warnings)\n"
+	printf (/*"    -q   -- Quiet mode (suspress warnings)\n"*/
+		"    -v   -- Be verbose. Show all warnings.\n\n"
 		"    -h   -- Show this help message.\n\n");
 
 	print_cplist(codepage);
@@ -431,6 +436,7 @@ void doconv_all(u_char * conv_tab, FILE * in, FILE * out)
 {
 	int c;				/* Input/output buffer */
 
+#ifdef USE_ICONV
 	char inbuf[4096 + 4096];
 	size_t inbufrest = 0;
 	char outbuf[4096];
@@ -507,7 +513,6 @@ void doconv_all(u_char * conv_tab, FILE * in, FILE * out)
 		}
 	}
 #endif
-#if 1
 
 	for (;;) {
 		size_t inbufsize = fread(inbuf + 4096, 1, 4096, in);
@@ -558,61 +563,7 @@ void doconv_all(u_char * conv_tab, FILE * in, FILE * out)
 	{
 	}
 	iconv_close(enc);
-#endif
-#if 0
-		iconv_t enc = iconv_open(o_cp->cp_name, i_cp->cp_name);
-		printf("\n%s => %s\n", i_cp->cp_name, o_cp->cp_name);
-
-		int one = 1;
-		//iconvctl(enc, ICONV_SET_DISCARD_ILSEQ, &one);
-		//SET_BINARY(fileno(in));
-
-		//char buf[512];
-		char *buf = (char *)malloc(512);
-		char outbuf[2048];
-
-		int r = 0;
-		while (r = fread(buf, 1, 512, in)) {
-			//iconv(enc, NULL, NULL, NULL, NULL);
-			int insize = r;
-			//memset(buf, 0, sizeof(buf));
-			//memset(outbuf, 0, sizeof(outbuf));
-
-			//printf("\n  Readed %d bytes...\n", r);
-			char *s_bufin = buf;
-			char *s_bufout = (char *)outbuf;
-
-			int outsize = sizeof(outbuf);
-
-			int res = iconv(enc, NULL, NULL, &s_bufout, &outsize);
-			if (s_bufout != outbuf) {
-				printf("\ns_bufout != buf\n");
-				char *bufptr = buf;
-				int k = iconv(enc, (char **)&bufptr, &insize, &s_bufout, &outsize);
-				fwrite(buf, 1, s_bufout - buf, out);
-			}
-			printf("%d\n", res);
-
-			printf("\nRecoding all...\n");
-			printf("\n%d, %d\n", insize, outsize);
-			//printf("BUFIN:%s\n\n", buf);
-			int i = 0;
-			for (; i < insize; i++) {
-				printf("0x%02x ", (u_char)s_bufin[i]);
-			}
-			printf("\n");
-
-			int k = iconv(enc, (char **)&s_bufin, &insize, &s_bufout, &outsize);
-			printf("\nEnd of all...\n");
-			int lout = 2048 - outsize;
-			fwrite(outbuf, 1, s_bufout - outbuf, out);
-			printf("%s", outbuf);
-			memset(buf, 0, sizeof(buf));
-			memset(outbuf, 0, sizeof(outbuf));
-		}
-		//fwrite(outbuf, 1, lout, out);
-#endif
-#if 0
+#else /* USE_ICONV */
 	/* XXX */
 	if (strcmp(i_cp->cp_name, UTF8) == 0) {
 		/*char hook[] = {'£', 'â'};*/
