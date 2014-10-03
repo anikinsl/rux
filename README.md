@@ -6,8 +6,8 @@ very simple but not less powerful utility.
 
 ## Install
 
-On BSD-systems simply run `make all install clean'. On other try `cc -lm -o rux
-rux.c cpdetect.c'.
+On BSD-systems simply run `make all install clean`. On other try `cc -lm -o rux
+rux.c cpdetect.c`.
 
 ## Description
 
@@ -24,7 +24,7 @@ Usually rux is used without any options because some values are accepted by
 default. There are -o utf-8, -e, -t.
 
 The expectancy value of the presence of every Cyrillic characters in the some
-text were taken from the dump of Russian translation of the `FreeBSD Handbook'.
+text were taken from the dump of Russian translation of the "FreeBSD Handbook".
 
 ## News
 
