@@ -636,7 +636,7 @@ int recode_buf(u_char * conv_tab, u_char * buf, int len, FILE * out, char *rch)
 
 	size_t inbufsize = len;
 	if (inbufsize == 0) {
-			return;
+			return 0;
 	} else {
 		const char *inptr = inbuf - inbufrest;
 		size_t insize = inbufrest + inbufsize;
