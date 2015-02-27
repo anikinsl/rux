@@ -1,7 +1,7 @@
 MAINTAINER=	anikinsl@gmail.com
 
 PROGNAME=	rux
-PROGVERSION=	0.80
+PROGVERSION=	0.81
 
 SRCS=		rux.c cpdetect.c
 OBJS=		rux.o cpdetect.o

@@ -1,6 +1,6 @@
 AC_INIT(rux.c)
 
-AM_INIT_AUTOMAKE(rux, 0.80, anikinsl@gmail.com)
+AM_INIT_AUTOMAKE(rux, 0.81, anikinsl@gmail.com)
 AM_CONFIG_HEADER(config.h:config.in)
 
 AC_PROG_CC
