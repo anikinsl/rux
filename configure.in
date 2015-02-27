@@ -8,11 +8,42 @@ AC_HEADER_STDC
 AM_MAINTAINER_MODE
 
 dnl AC_CHECK_HEADERS(stddef.h)
-dnl AC_CHECK_LIB(m, powf)
+AC_CHECK_LIB(iconv, iconvctl)
 dnl AC_EGREP_HEADER(utimbuf, utime.h, AC_DEFINE(HAVE_STRUCT_UTIMBUF))
 dnl AC_FUNC_UTIME_NULL
 AH_TEMPLATE([USE_ICONV], [If having iconv.h we able to convert text to utf-8])
 AC_CHECK_HEADERS(iconv.h, AC_DEFINE(USE_ICONV))
+
+dnl Check OS for os_dep files.
+uname=`uname`
+AC_MSG_CHECKING(for OS type)
+case "$uname" in
+  *inux*)
+    AC_MSG_RESULT($uname found.)
+    OUTCP="5"
+  ;;
+  *olaris*)
+    AC_MSG_RESULT($uname found.)
+    OUTCP="2"
+  ;;
+  *SunOS*)
+    AC_MSG_RESULT($uname found.)
+    OUTCP="2"
+  ;;
+  *OpenBSD*)
+    AC_MSG_RESULT($uname found.)
+    OUTCP="2"
+  ;;
+  *BSD*)
+    AC_MSG_RESULT($uname found.)
+    OUTCP="2"
+  ;;
+  *)
+    AC_MSG_RESULT(Unknown OS. Using default codepage koi8-r.)
+    OUTCP="2"
+  ;;
+esac
+AC_DEFINE_UNQUOTED(DEFAULT_OUTPUT_CP, $OUTCP, [ Default output code page. ])
 
 AC_ARG_WITH(default-codepage,
 	AC_HELP_STRING([--with-default-codepage=[OUT_CP_NAME]],
