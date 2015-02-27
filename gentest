@@ -6,13 +6,13 @@ for cp in $cps; do
 	cat test | iconv -f utf-8 -t $cp > test.$cp
 
 	./rux -T test.$cp
-	#./rux -o utf-8 test.$cp
-	./rux -o utf-8 test.$cp | md5sum
-	./rux -o cp1251 test.$cp | md5sum
-	./rux -o cp866 test.$cp | md5sum
-	./rux -o iso-8859-5 test.$cp | md5sum
-	./rux -o koi8-r test.$cp | md5sum
+	echo -----
+	./rux -o utf-8 test.$cp
+	#./rux -o utf-8 test.$cp | md5sum
+	#./rux -o cp1251 test.$cp | md5sum
+	#./rux -o cp866 test.$cp | md5sum
+	#./rux -o iso-8859-5 test.$cp | md5sum
+	#./rux -o koi8-r test.$cp | md5sum
 
-	cat test2 | iconv -f utf-8 -t $cp | md5sum
 	echo
 done

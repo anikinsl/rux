@@ -181,13 +181,13 @@ u_char boxdr_map[] = {
 #define TR	"tr"
 
 struct cpinfo codepage[] = {
-	{CP866,	"DOS cyrillic charset", sizeof(cptaba[0]), sizeof(boxdraw[0]), cptaba[0], boxdraw[0], .0, sizeof(u_char)},
-	{CP1251, "Windows cyrillic charset",	sizeof(cptaba[1]), 0, cptaba[1], NULL, .0, sizeof(u_char)},
-	{KOI8R, "RFC russian charset",	sizeof(cptaba[2]), sizeof(boxdraw[1]), cptaba[2], boxdraw[1], .0, sizeof(u_char)},
-	{ISO5, "ISO cyrillic charset",	sizeof(cptaba[3]), 0, cptaba[3], NULL, .0, sizeof(u_char)},
-	{MACCYR, "Apple Mac cyrillic charset",		sizeof(cptaba[4]), 0, cptaba[4], NULL, .0, sizeof(u_char)},
-	{UTF8, "Unicode 8-bit charset, Read-Only",	sizeof(cptaba[5]), 0, cptaba[5], NULL, .0, sizeof(wchar_t)},
-	/*{TR, "ASCII transliteration, Read-Only",	sizeof(cptaba[6]), 0, cptaba[6], NULL, .0},*/
+	{CP866,  "DOS cyrillic charset",             sizeof(cptaba[0]), sizeof(boxdraw[0]), cptaba[0], boxdraw[0], .0, sizeof(u_char)},
+	{CP1251, "Windows cyrillic charset",         sizeof(cptaba[1]), 0, cptaba[1], NULL, .0, sizeof(u_char)},
+	{KOI8R,  "RFC russian charset",              sizeof(cptaba[2]), sizeof(boxdraw[1]), cptaba[2], boxdraw[1], .0, sizeof(u_char)},
+	{ISO5,   "ISO cyrillic charset",             sizeof(cptaba[3]), 0, cptaba[3], NULL, .0, sizeof(u_char)},
+	{MACCYR, "Apple Mac cyrillic charset",       sizeof(cptaba[4]), 0, cptaba[4], NULL, .0, sizeof(u_char)},
+	{UTF8,   "Unicode 8-bit charset, Read-Only", sizeof(cptaba[5]), 0, cptaba[5], NULL, .0, sizeof(wchar_t)},
+	/*{TR, "ASCII transliteration, Read-Only",   sizeof(cptaba[6]), 0, cptaba[6], NULL, .0},*/
 	/*{UTF8S, "<test>",	sizeof(cptaba[6]), 0, cptaba[6], NULL, .0},*/
 	{NULL, NULL, 0, 0, NULL, NULL, .0}
 };
