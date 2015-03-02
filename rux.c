@@ -430,33 +430,11 @@ struct cpinfo *
  * and continuous converting of remaining part of file.
  */
 
-///struct loop_funcs {};
-///struct mbtowc_funcs {}; 
-///struct conv_struct { 
-///  struct loop_funcs lfuncs; 
-///  /* Input (conversion multibyte -> unicode) */ 
-///  int iindex; 
-///  struct mbtowc_funcs ifuncs; 
-///  state_t istate; 
-///  /* Output (conversion unicode -> multibyte) */ 
-///  int oindex; 
-///  struct wctomb_funcs ofuncs; 
-///  int oflags; 
-///  state_t ostate; 
-///  /* Operation flags */ 
-///  int transliterate; 
-///  int discard_ilseq; 
-///  #ifndef LIBICONV_PLUG 
-///  struct iconv_fallbacks fallbacks; 
-///  struct iconv_hooks hooks; 
-///  #endif 
-///}; 
-///
-///typedef struct conv_struct * conv_t;
 void doconv_all(u_char * conv_tab, FILE * in, FILE * out)
 {
 	int c;				/* Input/output buffer */
 
+	//printf("\ni_cp = %s, o_cp = %s\n", i_cp->cp_name, o_cp->cp_name);
 #ifdef USE_ICONV
 	char inbuf[4096 + 4096];
 	size_t inbufrest = 0;
@@ -464,11 +442,10 @@ void doconv_all(u_char * conv_tab, FILE * in, FILE * out)
 	int status = 0;
 
 	char output_cp_flags[64];
+	char input_cp_flags[64];
 	snprintf(output_cp_flags, sizeof(output_cp_flags), "%s//TRANSLIT", o_cp->cp_name);
 	iconv_t enc = iconv_open(output_cp_flags, i_cp->cp_name);
 
-	//conv_t cd = (conv_t) enc;
-	//cd->discard_ilseq = 1;
 #ifndef ICONV_SET_TRANSLITERATE
 #define ICONV_SET_TRANSLITERATE 2
 #endif
@@ -491,6 +468,7 @@ void doconv_all(u_char * conv_tab, FILE * in, FILE * out)
 #endif
 			rest = recode_buf(conv_tab, cur->data + rest,
 				cur->size - rest, out, &rch);
+
 			if (rest > 0) {
 				u_char char_buf;
 				if (cur->next) {
@@ -590,15 +568,13 @@ void doconv_all(u_char * conv_tab, FILE * in, FILE * out)
 #endif
 					if (errno == EILSEQ) {
 						/* discard unconvertible */
+						fwrite(inptr, 1, insize, stdout);
 					} else if (errno == EINVAL) {
 						if (inbufsize == 0 || insize > 4096) {
 							return;
 						} else {
 							inbufrest = insize;
 							if (insize > 0) {
-#ifdef DEBUG
-				printf("%d>0\n", insize);
-#endif
 								char *restptr = inbuf + 4096 - insize;
 								do { *restptr++ = *inptr++; } while (--insize > 0);
 							}
@@ -606,6 +582,8 @@ void doconv_all(u_char * conv_tab, FILE * in, FILE * out)
 						}
 					} else if (errno != E2BIG) {
 						return;
+					} else {
+						goto done;
 					}
 					break;
 				}
@@ -614,6 +592,7 @@ void doconv_all(u_char * conv_tab, FILE * in, FILE * out)
 	}
 	{
 	}
+	done:
 #ifdef DEBUG
 	printf("before iconv_close...\n");
 #endif
@@ -686,7 +665,8 @@ int recode_buf(u_char * conv_tab, u_char * buf, int len, FILE * out, char *rch)
 	char output_cp_flags[64];
 	snprintf(output_cp_flags, sizeof(output_cp_flags), "%s//TRANSLIT", o_cp->cp_name);
 	iconv_t enc = iconv_open(output_cp_flags, i_cp->cp_name);
-	char *inbuf = buf;
+	char inbuf[4096 + 4096];
+	memcpy(inbuf + 4096, buf, len);
 	size_t inbufrest = 0;
 	char outbuf[4096];
 	int status = 0;
@@ -697,7 +677,7 @@ int recode_buf(u_char * conv_tab, u_char * buf, int len, FILE * out, char *rch)
 	if (inbufsize == 0) {
 			return 0;
 	} else {
-		const char *inptr = inbuf - inbufrest;
+		const char *inptr = inbuf + 4096 - inbufrest;
 		size_t insize = inbufrest + inbufsize;
 		inbufrest = 0;
 		while (insize > 0) {
@@ -724,6 +704,8 @@ int recode_buf(u_char * conv_tab, u_char * buf, int len, FILE * out, char *rch)
 				printf("\nres == (size_t)(-1)\n");
 #endif
 				if (errno == EILSEQ) {
+					/* discard unconvertible */
+					fwrite(inptr, 1, insize, stdout);
 #ifdef DEBUG
 					printf("\nerrno == EILSEQ\n");
 #endif
