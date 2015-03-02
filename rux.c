@@ -460,7 +460,7 @@ void doconv_all(u_char * conv_tab, FILE * in, FILE * out)
 		int rest = 0;
 
 		while (cur) {
-			u_char rch;
+			char rch;
 #ifdef DEBUG
 			printf("\n!!buf!!\n");
 			printf("\ncur->data=%x", *cur->data);
@@ -493,7 +493,7 @@ void doconv_all(u_char * conv_tab, FILE * in, FILE * out)
 #ifdef DEBUG
 				printf("\ninsize=%d, outsize=%d\n", insize, outsize);
 #endif
-				size_t res = iconv(enc, (char **)&inptr, &insize, &outptr, &outsize);
+				size_t res = iconv(enc, (const char **)&inptr, &insize, &outptr, &outsize);
 #ifdef DEBUG
 				printf("\ninsize=%d, outsize=%d\n", insize, outsize);
 #endif
@@ -549,7 +549,7 @@ void doconv_all(u_char * conv_tab, FILE * in, FILE * out)
 #endif
 				char *outptr = outbuf;
 				size_t outsize = sizeof(outbuf);
-				size_t res = iconv(enc, (char **)&inptr, &insize, &outptr, &outsize);
+				size_t res = iconv(enc, (const char **)&inptr, &insize, &outptr, &outsize);
 #ifdef DEBUG
 				printf("%d\n", res);
 #endif
@@ -683,7 +683,7 @@ int recode_buf(u_char * conv_tab, u_char * buf, int len, FILE * out, char *rch)
 		while (insize > 0) {
 			char *outptr = outbuf;
 			size_t outsize = sizeof(outbuf);
-			size_t res = iconv(enc, (char **)&inptr, &insize, &outptr, &outsize);
+			size_t res = iconv(enc, (const char **)&inptr, &insize, &outptr, &outsize);
 #ifdef DEBUG
 			printf("\ninsize=%d\n", insize);
 #endif
@@ -832,6 +832,7 @@ int recode_buf(u_char * conv_tab, u_char * buf, int len, FILE * out, char *rch)
 		}
 	}
 #endif
+	return 0;
 }
 
 void add_buf(u_char * buf, int size)
